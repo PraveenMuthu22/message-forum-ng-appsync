@@ -1,1 +1,5 @@
-<p>message-list works!</p>
+<b> List of messages </b>
+
+<ul *ngFor='let message of messages'> 
+  <li> {{message.Message}}  {{message.Rating}} </li>
+</ul>
