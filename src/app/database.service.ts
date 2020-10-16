@@ -2,14 +2,15 @@ import { Injectable } from '@angular/core';
 import { AWSAppSyncClient, AUTH_TYPE } from 'aws-appsync';
 import { GetAllQuery } from './graphql/queries/Queries';
 import { IMessage } from './Models/IMessage';
-import { from } from 'rxjs';
+import { IgetAllMessagesResponse } from './Models/IResponses';
+import { from, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DatabaseService {
   private client = null;
-  messages: IMessage[];
+  messages: Observable<IMessage[]>;
   constructor() {
     this.client = new AWSAppSyncClient({
       url: 'https://v4hoyc5jvjbaxfcv3r53zy5egi.appsync-api.ap-southeast-2.amazonaws.com/graphql',
@@ -21,13 +22,13 @@ export class DatabaseService {
     });
   }
 
-  async loadTasks(): Promise<IMessage[]> {
+  loadTasks(): Observable<any> {
     const query = GetAllQuery;
-    const result = await this.client.query({
-      query, fetchPolicy: 'network-only'
-    });
-
-    this.messages = result.data.listPraveenTestMessages.items;
-    return this.messages;
+    const result = from(
+      this.client.query({
+        query, fetchPolicy: 'network-only'
+      })
+    );
+    return result;
   }
 }
